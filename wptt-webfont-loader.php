@@ -309,7 +309,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 					$filename  = basename( wp_parse_url( $url, PHP_URL_PATH ) );
 					$font_path = $folder_path . '/' . $filename;
 					/**
-					 * In typescript, the filename will always be the same. We also need to check for query vars in their URLs.
+					 * In Typekit, the filename will always be the same. We also need to check for query vars in their URLs.
 					 * They provide this font variation description that we can use https://github.com/typekit/fvd
 					 */
 					$queries = parse_url( $url, PHP_URL_QUERY );
