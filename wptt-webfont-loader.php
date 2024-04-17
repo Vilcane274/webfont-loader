@@ -3,6 +3,7 @@
  * Download webfonts locally.
  *
  * @package wptt/font-loader
+ * @link https://github.com/WPTT/webfont-loader
  * @license https://opensource.org/licenses/MIT
  */
 
@@ -101,9 +102,9 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 		 *
 		 * @access protected
 		 * @since 1.1.0
-		 * @var string
+		 * @var null|string
 		 */
-		protected $css;
+		protected $css = null;
 
 		/**
 		 * Cleanup routine frequency.
@@ -137,6 +138,11 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 		 * @return string
 		 */
 		public function get_url() {
+
+			// If remote URL is empty just return itself.
+			if ( empty( $this->remote_url ) ) {
+				return $this->remote_url;
+			}
 
 			// Check if the local stylesheet exists.
 			if ( $this->local_file_exists() ) {
@@ -180,10 +186,20 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 		 */
 		public function get_styles() {
 
+			// If remote URL is empty, set empty string.
+			if ( empty( $this->remote_url ) ) {
+				$this->css = '';
+			}
+
+			// If the CSS is set already, return it.
+			if ( is_string( $this->css ) ) {
+				return $this->css;
+			}
+
 			// If we already have the local file, return its contents.
-			$local_stylesheet_contents = $this->get_local_stylesheet_contents();
-			if ( $local_stylesheet_contents ) {
-				return $local_stylesheet_contents;
+			$this->css = $this->get_local_stylesheet_contents();
+			if ( ! empty( $this->css ) ) {
+				return $this->css;
 			}
 
 			// Get the remote URL contents.
@@ -220,7 +236,6 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 		 * @return string|false Returns the remote URL contents.
 		 */
 		public function get_local_stylesheet_contents() {
-			$local_path = $this->get_local_stylesheet_path();
 
 			// Check if the local stylesheet exists.
 			if ( $this->local_file_exists() ) {
@@ -232,7 +247,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 			}
 
 			ob_start();
-			include $local_path;
+			include $this->get_local_stylesheet_path();
 			return ob_get_clean();
 		}
 
@@ -464,7 +479,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 			// If the folder doesn't exist, create it.
 			if ( ! file_exists( $this->get_fonts_folder() ) ) {
-				$this->get_filesystem()->mkdir( $this->get_fonts_folder(), FS_CHMOD_DIR );
+				$filesystem->mkdir( $this->get_fonts_folder(), FS_CHMOD_DIR );
 			}
 
 			// If the file doesn't exist, create it. Return false if it can not be created.
@@ -474,7 +489,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 			// If we got this far, we need to write the file.
 			// Get the CSS.
-			if ( ! $this->css ) {
+			if ( is_null( $this->css ) ) {
 				$this->get_styles();
 			}
 
@@ -528,6 +543,10 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 		/**
 		 * Check if the local stylesheet exists.
+		 *
+		 * The name of this method is wrong. Should be "no_local_file_exists()"
+		 * as it returns true if the file does NOT exist.
+		 * Keeping the original name not to break 3rd party scripts.
 		 *
 		 * @access public
 		 * @since 1.1.0
