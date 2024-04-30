@@ -489,7 +489,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 			// If we got this far, we need to write the file.
 			// Get the CSS.
-			if ( is_null( $this->css ) ) {
+			if ( null === $this->css ) {
 				$this->get_styles();
 			}
 
