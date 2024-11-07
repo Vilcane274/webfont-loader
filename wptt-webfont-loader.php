@@ -194,7 +194,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 			// Convert paths to URLs.
 			foreach ( $files as $remote => $local ) {
-				$files[ $remote ] = str_replace(
+				$files( $remote ) = str_replace(
 					$this->get_base_path(),
 					$this->get_base_url(),
 					$local
@@ -314,12 +314,12 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 					if ( file_exists( $font_path ) ) {
 
 						// Skip if already cached.
-						if ( isset( $stored[ $url ] ) ) {
+						if ( isset( $stored( $url ) ) ) {
 							continue;
 						}
 
 						// Add file to the cache and change the $changed var to indicate we need to update the option.
-						$stored[ $url ] = $font_path;
+						$stored( $url ) = $font_path;
 						$change         = true;
 
 						// Since the file exists we don't need to proceed with downloading it.
@@ -346,7 +346,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 					// Move temp file to final destination.
 					$success = $this->get_filesystem()->move( $tmp_path, $font_path, true );
 					if ( $success ) {
-						$stored[ $url ] = $font_path;
+						$stored( $url ) = $font_path;
 						$change         = true;
 					}
 				}
@@ -358,7 +358,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 				// Cleanup the option and then save it.
 				foreach ( $stored as $url => $path ) {
 					if ( ! file_exists( $path ) ) {
-						unset( $stored[ $url ] );
+						unset( $stored( $url ) );
 					}
 				}
 				update_site_option( 'downloaded_font_files', $stored );
@@ -407,7 +407,7 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 
 				// Make sure the font-family is set in our array.
 				if ( ! isset( $result[ $font_family ] ) ) {
-					$result[ $font_family ] = array();
+					$result( $font_family ) = array();
 				}
 
 				// Get files for this font-family and add them to the array.
@@ -419,12 +419,13 @@ if ( ! class_exists( 'WPTT_WebFont_Loader' ) ) {
 					}
 
 					// Add the file URL.
-					$result[ $font_family ][] = rtrim( ltrim( $match[0], 'url(' ), ')' );
+					$result( $font_family )() = rtrim( ltrim( $match(0), 'url(' ), ')' );
 				}
 
 				// Make sure we have unique items.
 				// We're using array_flip here instead of array_unique for improved performance.
-				$result[ $font_family ] = array_flip( array_flip( $result[ $font_family ] ) );
+				$result( $font_family )
+					= array_flip( array_flip( $result( $font_family ) ) );
 			}
 			return $result;
 		}
